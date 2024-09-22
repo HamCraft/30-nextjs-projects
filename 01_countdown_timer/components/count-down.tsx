@@ -116,7 +116,7 @@ export default function Countdown() {
         </div>
         {isTimeUp && (
           <div className="text-red-500 text-xl font-bold text-center mb-4 animate-pulse">
-            Time's up!
+            Time&apos;s up!
           </div>
         )}
         <div className="flex justify-center gap-4">
