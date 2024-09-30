@@ -62,7 +62,7 @@ export default function ExpenseTracker() {
   // State to manage the new expense input form
   const [newExpense, setNewExpense] = useState<{
     name: string;
-    amount: string;
+    amount: string; // Using string for controlled input
     date: Date;
   }>({
     name: "",
@@ -77,30 +77,38 @@ export default function ExpenseTracker() {
       setExpenses(
         JSON.parse(storedExpenses).map((expense: Expense) => ({
           ...expense,
-          date: new Date(expense.date),
+          date: new Date(expense.date), // Ensure date is a Date object
         }))
       );
     } else {
-      setExpenses(initialExpenses);
+      setExpenses(initialExpenses); // Set initial expenses if none stored
     }
   }, []);
 
   // useEffect to store expenses in local storage whenever they change
   useEffect(() => {
     if (expenses.length > 0) {
-      localStorage.setItem("expenses", JSON.stringify(expenses));
+      localStorage.setItem("expenses", JSON.stringify(expenses)); // Store expenses in local storage
     }
   }, [expenses]);
 
   // Function to handle adding a new expense
   const handleAddExpense = (): void => {
+    const amount = parseFloat(newExpense.amount); // Convert amount to a number
+
+    // Check if the amount is valid
+    if (isNaN(amount) || amount <= 0) {
+      alert("Please enter a valid amount."); // Alert if amount is invalid
+      return; // Prevent adding if the amount is invalid
+    }
+
     setExpenses([
       ...expenses,
       {
-        id: expenses.length + 1,
+        id: expenses.length + 1, // Generate a new ID for the expense
         name: newExpense.name,
-        amount: parseFloat(newExpense.amount),
-        date: new Date(newExpense.date),
+        amount: amount, // Ensure amount is a valid number
+        date: new Date(newExpense.date), // Use date from input
       },
     ]);
     resetForm(); // Reset the input form
@@ -109,25 +117,34 @@ export default function ExpenseTracker() {
 
   // Function to handle editing an existing expense
   const handleEditExpense = (id: number): void => {
-    const expenseToEdit = expenses.find((expense) => expense.id === id);
+    const expenseToEdit = expenses.find((expense) => expense.id === id); // Find the expense by ID
     if (expenseToEdit) {
+      // Populate the form with the selected expense data
       setNewExpense({
         name: expenseToEdit.name,
-        amount: expenseToEdit.amount.toString(),
+        amount: expenseToEdit.amount.toString(), // Convert amount to string for controlled input
         date: expenseToEdit.date,
       });
-      setCurrentExpenseId(id);
-      setIsEditing(true);
-      setShowModal(true);
+      setCurrentExpenseId(id); // Set the ID of the current expense
+      setIsEditing(true); // Set editing mode to true
+      setShowModal(true); // Show the modal
     }
   };
 
   // Function to handle saving the edited expense
   const handleSaveEditExpense = (): void => {
+    const amount = parseFloat(newExpense.amount); // Convert amount to a number
+
+    // Check if the amount is valid
+    if (isNaN(amount) || amount <= 0) {
+      alert("Please enter a valid amount."); // Alert if amount is invalid
+      return; // Prevent saving if the amount is invalid
+    }
+
     setExpenses(
       expenses.map((expense) =>
         expense.id === currentExpenseId
-          ? { ...expense, ...newExpense, amount: parseFloat(newExpense.amount) }
+          ? { ...expense, ...newExpense, amount: amount } // Update the expense
           : expense
       )
     );
@@ -139,30 +156,35 @@ export default function ExpenseTracker() {
   const resetForm = (): void => {
     setNewExpense({
       name: "",
-      amount: "",
-      date: new Date(),
+      amount: "", // Reset amount to empty string
+      date: new Date(), // Reset date to current date
     });
-    setIsEditing(false);
-    setCurrentExpenseId(null);
+    setIsEditing(false); // Reset editing mode
+    setCurrentExpenseId(null); // Reset current expense ID
   };
 
   // Function to handle deleting an expense
   const handleDeleteExpense = (id: number): void => {
-    setExpenses(expenses.filter((expense) => expense.id !== id));
+    setExpenses(expenses.filter((expense) => expense.id !== id)); // Remove the expense by ID
   };
 
   // Calculate the total expenses
   const totalExpenses = expenses.reduce(
-    (total, expense) => total + expense.amount,
+    (total, expense) => total + expense.amount, // Sum up the amounts
     0
   );
 
   // Function to handle input changes
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const { id, value } = e.target;
+    const { id, value } = e.target; // Destructure target ID and value
     setNewExpense((prevExpense) => ({
       ...prevExpense,
-      [id]: id === "amount" ? value : new Date(value),
+      [id]:
+        id === "amount"
+          ? value // Keep amount as a string for input
+          : id === "date"
+          ? new Date(value) // Convert date to Date object
+          : value,
     }));
   };
 
@@ -174,7 +196,7 @@ export default function ExpenseTracker() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Expense Tracker</h1>
           <div className="text-2xl font-bold">
-            Total: ${totalExpenses.toFixed(2)}
+            Total: ${totalExpenses.toFixed(2)} {/* Display total expenses */}
           </div>
         </div>
       </header>
@@ -189,22 +211,22 @@ export default function ExpenseTracker() {
               <div>
                 <h3 className="text-lg font-medium">{expense.name}</h3>
                 <p className="text-muted-foreground">
-                  ${expense.amount.toFixed(2)} -{" "}
-                  {format(expense.date, "dd/MM/yyyy")}
+                  ${expense.amount != null ? expense.amount.toFixed(2) : "0.00"} -{" "}
+                  {format(expense.date, "dd/MM/yyyy")} {/* Format date for display */}
                 </p>
               </div>
               <div className="flex gap-2">
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleEditExpense(expense.id)}
+                  onClick={() => handleEditExpense(expense.id)} // Open edit modal
                 >
                   <FilePenIcon className="w-5 h-5" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleDeleteExpense(expense.id)}
+                  onClick={() => handleDeleteExpense(expense.id)} // Delete expense
                 >
                   <TrashIcon className="w-5 h-5" />
                 </Button>
@@ -219,9 +241,9 @@ export default function ExpenseTracker() {
           size="icon"
           className="rounded-full shadow-lg"
           onClick={() => {
-            setShowModal(true);
-            setIsEditing(false);
-            resetForm();
+            setShowModal(true); // Show modal for adding expense
+            setIsEditing(false); // Reset editing state
+            resetForm(); // Reset form fields
           }}
         >
           <PlusIcon className="w-6 h-6" />
@@ -229,54 +251,39 @@ export default function ExpenseTracker() {
       </div>
       {/* Modal dialog for adding/editing expenses */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="bg-card p-6 rounded-lg shadow w-full max-w-md">
+        <DialogContent className="bg-card p-6">
           <DialogHeader>
-            <DialogTitle>
-              {isEditing ? "Edit Expense" : "Add Expense"}
-            </DialogTitle>
+            <DialogTitle>{isEditing ? "Edit Expense" : "Add Expense"}</DialogTitle>
           </DialogHeader>
-          <div>
-            <div className="grid gap-4">
-              {/* Expense name input */}
-              <div className="grid gap-2">
-                <Label htmlFor="name">Expense Name</Label>
-                <Input
-                  id="name"
-                  value={newExpense.name}
-                  onChange={handleInputChange}
-                />
-              </div>
-              {/* Expense amount input */}
-              <div className="grid gap-2">
-                <Label htmlFor="amount">Amount</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  value={newExpense.amount}
-                  onChange={handleInputChange}
-                />
-              </div>
-              {/* Expense date input */}
-              <div className="grid gap-2">
-                <Label htmlFor="date">Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={newExpense.date.toISOString().slice(0, 10)}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-          </div>
-          {/* Modal footer with action buttons */}
+          {/* Input fields for expense details */}
+          <Label htmlFor="name">Expense Name</Label>
+          <Input
+            id="name"
+            value={newExpense.name}
+            onChange={handleInputChange}
+            className="mb-4"
+          />
+          <Label htmlFor="amount">Amount</Label>
+          <Input
+            id="amount"
+            type="number" // Set input type to number
+            value={newExpense.amount}
+            onChange={handleInputChange}
+            className="mb-4"
+          />
+          <Label htmlFor="date">Date</Label>
+          <Input
+            id="date"
+            type="date" // Set input type to date
+            value={newExpense.date.toISOString().substring(0, 10)} // Format date for input
+            onChange={handleInputChange}
+            className="mb-4"
+          />
+          {/* Modal footer with buttons */}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowModal(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={isEditing ? handleSaveEditExpense : handleAddExpense}
-            >
-              {isEditing ? "Save Changes" : "Add Expense"}
+            <Button variant="outline" onClick={() => setShowModal(false)}>Cancel</Button>
+            <Button onClick={isEditing ? handleSaveEditExpense : handleAddExpense}>
+              {isEditing ? "Save" : "Add"} Expense
             </Button>
           </DialogFooter>
         </DialogContent>
