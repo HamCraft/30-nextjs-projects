@@ -69,64 +69,74 @@ export default function StopWatch() {
 
   // JSX return statement rendering the Stopwatch UI
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-200 to-purple-300 p-6">
-      <Card className="w-full max-w-lg shadow-lg rounded-xl">
-        <CardHeader className="flex flex-col items-center justify-center p-6 bg-gradient-to-r from-purple-400 to-indigo-600 rounded-t-xl text-white">
-          <CardTitle className="text-6xl font-extrabold tracking-tight">Stopwatch</CardTitle>
-          <CardDescription className="text-lg mt-2 text-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-200 to-purple-300 p-4 md:p-6">
+      <Card className="w-full max-w-md md:max-w-lg shadow-lg rounded-xl">
+        <CardHeader className="flex flex-col items-center justify-center p-4 md:p-6 bg-gradient-to-r from-purple-400 to-indigo-600 rounded-t-xl text-white">
+          <CardTitle className="text-4xl md:text-6xl font-extrabold tracking-tight">
+            Stopwatch
+          </CardTitle>
+          <CardDescription className="text-sm md:text-lg mt-2 text-gray-100">
             Track your time efficiently
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center gap-8 p-8 bg-white rounded-b-xl">
+        <CardContent className="flex flex-col items-center justify-center gap-6 md:gap-8 p-6 md:p-8 bg-white rounded-b-xl">
           {/* Display the elapsed time */}
-          <div className="text-8xl font-extrabold tracking-tight">
+          <div className="text-5xl md:text-8xl font-extrabold tracking-tight">
             {minutes.toString().padStart(2, "0")}:
             {seconds.toString().padStart(2, "0")}.
             {milliseconds.toString().padStart(2, "0")}
           </div>
           {/* Buttons to control the stopwatch */}
-          <div className="flex gap-6">
+          <div className="flex flex-col gap-4 md:flex-row md:gap-6 w-full justify-center">
             <Button
               onClick={isRunning ? handleStop : handleStart}
-              className={`px-8 py-3 text-lg font-bold rounded-full shadow transition-all ${
-                isRunning ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
-              } text-white`}
+              className={`px-4 py-2 md:px-8 md:py-3 text-lg font-bold rounded-full shadow transition-all ${
+                isRunning
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-green-500 hover:bg-green-600"
+              } text-white w-full md:w-auto`}
             >
               {isRunning ? "Stop" : "Start"}
             </Button>
             <Button
               onClick={handleReset}
-              className="px-8 py-3 text-lg font-bold rounded-full shadow bg-gray-500 hover:bg-gray-600 text-white transition-all"
+              className="px-4 py-2 md:px-8 md:py-3 text-lg font-bold rounded-full shadow bg-gray-500 hover:bg-gray-600 text-white transition-all w-full md:w-auto"
             >
               Reset
             </Button>
             <Button
               onClick={handleLap}
-              className="px-8 py-3 text-lg font-bold rounded-full shadow bg-blue-500 hover:bg-blue-600 text-white transition-all"
+              className="px-4 py-2 md:px-8 md:py-3 text-lg font-bold rounded-full shadow bg-blue-500 hover:bg-blue-600 text-white transition-all w-full md:w-auto"
             >
               Lap
             </Button>
           </div>
           {/* Display the list of lap times */}
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-sm md:max-w-md mt-4 md:mt-0">
             <Card className="overflow-hidden border border-gray-300 rounded-lg">
               <CardHeader className="bg-gray-200 p-4">
-                <CardTitle className="text-xl font-semibold text-gray-700">
+                <CardTitle className="text-lg md:text-xl font-semibold text-gray-700">
                   Lap Times
                 </CardTitle>
               </CardHeader>
-              <CardContent className="max-h-[300px] overflow-auto p-0">
+              <CardContent className="max-h-[200px] md:max-h-[300px] overflow-auto p-0">
                 <Table className="min-w-full">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="text-left text-sm font-medium text-gray-600">Lap</TableHead>
-                      <TableHead className="text-right text-sm font-medium text-gray-600">Time</TableHead>
+                      <TableHead className="text-left text-xs md:text-sm font-medium text-gray-600">
+                        Lap
+                      </TableHead>
+                      <TableHead className="text-right text-xs md:text-sm font-medium text-gray-600">
+                        Time
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {lapTimes.map((lapTime, index) => (
                       <TableRow key={index}>
-                        <TableCell className="font-medium text-gray-800">{index + 1}</TableCell>
+                        <TableCell className="font-medium text-gray-800">
+                          {index + 1}
+                        </TableCell>
                         <TableCell className="text-right font-medium text-gray-800">
                           {Math.floor(lapTime / 60000)
                             .toString()
