@@ -102,17 +102,14 @@ const AudioPlayer: React.FC<AudioPlayerProps> = () => {
       audioRef.current.currentTime = 0; // Reset the current time
       setCurrentTime(0); // Reset the displayed current time
       setProgress(0); // Reset the progress bar
-    }
-  }, [currentTrackIndex, tracks]);
   
-  // Separate useEffect for handling play when `isPlaying` changes
-  useEffect(() => {
-    if (isPlaying) {
-      audioRef.current?.play();
-    } else {
-      audioRef.current?.pause();
+      // If the player was playing before switching tracks, resume playing
+      if (isPlaying) {
+        audioRef.current.play();
+      }
     }
-  }, [isPlaying]);
+  }, [currentTrackIndex, tracks, isPlaying]);
+  
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white px-4">
